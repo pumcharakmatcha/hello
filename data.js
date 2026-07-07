@@ -34,4 +34,13 @@ const CUSTOMERS = [
       { date: "2026-07-05", type: "คืน", amount: -515000 },
     ],
   },
+  {
+    id: "ID01",
+    name: "Pumcha",
+    transactions: [
+      { date: "2026-07-01", type: "ฝาก", item: "NF snooker", amount: 1000000 },
+      { date: "2026-07-04", type: "คืน", amount: -592727 },
+      { date: "2026-07-05", type: "ฝาก", item: "ไวเบรเนี่ยม", amount: 2700000 },
+    ],
+  },
 ];
