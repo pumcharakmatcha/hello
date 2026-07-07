@@ -158,20 +158,20 @@
     <div class="card">
       <div class="toolbar">
         <span class="who">เข้าสู่ระบบเป็น <b id="whoName"></b></span>
-        <button class="secondary mini" id="btnImportCSV">📥 นำเข้า CSV</button>
-        <input type="file" id="fileImport" accept=".csv" multiple style="display:none">
-        <button class="secondary mini" id="btnAllCSV">📦 ดาวน์โหลด CSV ทุกคน</button>
-        <button class="mini" id="btnDataJS">⬇ ดาวน์โหลด data.js</button>
+        <button class="mini" id="btnPublish">🚀 บันทึกขึ้นเว็บจริง</button>
+        <button class="secondary mini" id="btnDataJS">⬇ ดาวน์โหลดไฟล์สำรอง</button>
+        <button class="secondary mini" id="btnToken">⚙ ตั้งค่า GitHub Token</button>
         <button class="danger mini" id="btnReset">♻ ล้างฉบับร่าง</button>
         <button class="danger mini" id="btnLogout">ออกจากระบบ</button>
       </div>
+      <div class="hint" id="pubStatus" style="display:none"></div>
     </div>
 
     <div class="notice">
-      ข้อมูลที่แก้ในหน้านี้เป็น <b>ฉบับร่างในเครื่องนี้เท่านั้น</b> — เมื่อแก้เสร็จให้กด
-      <b>"ดาวน์โหลด data.js"</b> แล้วนำไฟล์ไปวางแทนที่ <b>data.js</b> ใน GitHub
-      (เปิดไฟล์ใน GitHub → ไอคอนดินสอ → วางเนื้อหาใหม่ → Commit) หน้าเว็บลูกค้าจึงจะอัปเดต
-      ส่วนปุ่ม CSV ใช้ดาวน์โหลดไฟล์รายบุคคล <b>ID.ชื่อ.csv</b> เก็บเข้า Drive
+      แก้ข้อมูลด้านล่างแล้วกด <b>"🚀 บันทึกขึ้นเว็บจริง"</b> ได้เลย — ระบบจะ
+      <b>สำรอง data.js ฉบับเก่าไว้ในโฟลเดอร์ backups/</b> ใน GitHub ให้ทุกครั้งก่อนเขียนทับ
+      แล้วหน้าเว็บลูกค้าจะอัปเดตเองใน 1–2 นาที
+      (เครื่องที่ใช้ครั้งแรกต้องกด <b>"⚙ ตั้งค่า GitHub Token"</b> หนึ่งครั้งก่อน)
     </div>
 
     <div class="card">
@@ -388,7 +388,6 @@ function renderList() {
       "<td class='" + (cleared ? "ok" : "due") + "'>" + (cleared ? "ไถ่ถอนครบ" : "ค้างชำระ") + "</td>" +
       "<td style='white-space:nowrap'>" +
         "<button class='secondary mini' data-act='edit' data-i='" + i + "'>แก้ไข</button> " +
-        "<button class='secondary mini' data-act='csv' data-i='" + i + "'>CSV</button> " +
         "<button class='danger mini' data-act='del' data-i='" + i + "'>ลบ</button>" +
       "</td>";
     body.appendChild(tr);
@@ -400,7 +399,6 @@ document.getElementById("custRows").addEventListener("click", function (e) {
   if (!btn) return;
   const i = +btn.dataset.i;
   if (btn.dataset.act === "edit") openEditor(i);
-  if (btn.dataset.act === "csv") downloadCustomerCSV(DB[i]);
   if (btn.dataset.act === "del") {
     if (confirm("ลบลูกค้า " + DB[i].id + " " + DB[i].name + " ออกจากฉบับร่าง?")) {
       DB.splice(i, 1);
@@ -575,21 +573,122 @@ function showEditErr(msg) {
   err.style.display = "block";
 }
 
-/* ═══════════════ ดาวน์โหลด CSV รายบุคคล (ID.ชื่อ.csv) ═══════════════ */
+/* ═══════════════ บันทึกขึ้นเว็บจริง (Commit data.js ขึ้น GitHub) ═══════════════
+ * ใช้ GitHub Token ที่แอดมินกรอกเอง (เก็บใน localStorage ของเครื่องนั้น ไม่อยู่ในโค้ด)
+ * ทุกครั้งที่บันทึก จะสำรอง data.js เดิมไว้ที่โฟลเดอร์ backups/ ใน GitHub ก่อนเสมอ
+ */
 
-function csvEscape(v) {
-  v = String(v == null ? "" : v);
-  return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+const REPO = {
+  owner: "pumcharakmatcha",
+  name: "hello",
+  branch: "claude/pawn-shop-web-form-mcbs7q", // ถ้าย้ายเว็บไป branch อื่น แก้ตรงนี้
+};
+const TOKEN_KEY = "tob_admin_token";
+
+function getToken() { return localStorage.getItem(TOKEN_KEY) || ""; }
+
+document.getElementById("btnToken").addEventListener("click", function () {
+  const t = prompt(
+    "วาง GitHub Token ของร้าน (Fine-grained token สิทธิ์ Contents: Read and write เฉพาะ repo " +
+    REPO.owner + "/" + REPO.name + ")\n\nถ้าต้องการลบ Token ออกจากเครื่องนี้ ให้เว้นว่างแล้วกดตกลง",
+    getToken()
+  );
+  if (t === null) return;
+  if (t.trim() === "") {
+    localStorage.removeItem(TOKEN_KEY);
+    setStatus("ลบ Token ออกจากเครื่องนี้แล้ว", false);
+  } else {
+    localStorage.setItem(TOKEN_KEY, t.trim());
+    setStatus("บันทึก Token ไว้ในเครื่องนี้แล้ว ✓ พร้อมกดบันทึกขึ้นเว็บจริงได้เลย", false);
+  }
+});
+
+function setStatus(msg, isErr) {
+  const el = document.getElementById("pubStatus");
+  el.textContent = msg;
+  el.style.display = "block";
+  el.style.color = isErr ? "var(--red)" : "var(--green)";
 }
 
-function customerCSV(c) {
-  const rows = [["id", "name", "date", "type", "item", "amount", "admin"]];
-  c.transactions.forEach(function (tx) {
-    rows.push([c.id, c.name, tx.date, tx.type || "", tx.item || "", tx.amount, tx.admin || ""]);
+function gh(path, opts) {
+  opts = opts || {};
+  opts.headers = Object.assign({
+    "Authorization": "Bearer " + getToken(),
+    "Accept": "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+  }, opts.headers || {});
+  return fetch("https://api.github.com" + path, opts).then(function (res) {
+    return res.json().catch(function () { return {}; }).then(function (body) {
+      if (!res.ok) {
+        const e = new Error((body && body.message) || ("HTTP " + res.status));
+        e.status = res.status;
+        throw e;
+      }
+      return body;
+    });
   });
-  // BOM ทำให้ Excel เปิดภาษาไทยไม่เพี้ยน
-  return "\uFEFF" + rows.map(function (r) { return r.map(csvEscape).join(","); }).join("\r\n");
 }
+
+function b64utf8(s) { return btoa(unescape(encodeURIComponent(s))); }
+
+document.getElementById("btnPublish").addEventListener("click", async function () {
+  if (!getToken()) {
+    setStatus("ยังไม่ได้ตั้งค่า Token — กดปุ่ม \"⚙ ตั้งค่า GitHub Token\" ก่อน (ทำครั้งเดียวต่อเครื่อง)", true);
+    return;
+  }
+  const btn = this;
+  btn.disabled = true;
+  try {
+    const base = "/repos/" + REPO.owner + "/" + REPO.name + "/contents/";
+    const ref = "?ref=" + encodeURIComponent(REPO.branch);
+
+    setStatus("(1/3) กำลังอ่าน data.js ปัจจุบันจาก GitHub…", false);
+    let cur = null;
+    try {
+      cur = await gh(base + "data.js" + ref);
+    } catch (ex) {
+      if (ex.status !== 404) throw ex; // 404 = ยังไม่มีไฟล์ data.js ใน branch นี้ ข้ามการสำรอง
+    }
+
+    let backupPath = null;
+    if (cur) {
+      const stamp = new Date().toISOString().replace(/[:T]/g, "-").slice(0, 19);
+      backupPath = "backups/data-" + stamp + ".js";
+      setStatus("(2/3) กำลังสำรองไฟล์เก่าไปที่ " + backupPath + "…", false);
+      await gh(base + backupPath, {
+        method: "PUT",
+        body: JSON.stringify({
+          message: "สำรอง data.js ก่อนอัปเดต โดย " + currentAdmin(),
+          content: cur.content.replace(/\n/g, ""),
+          branch: REPO.branch,
+        }),
+      });
+    }
+
+    setStatus("(3/3) กำลังอัปเดต data.js ขึ้นเว็บจริง…", false);
+    const payload = {
+      message: "อัปเดตข้อมูลลูกค้า โดย " + currentAdmin() + " (จากหน้าแอดมิน)",
+      content: b64utf8(buildDataJS()),
+      branch: REPO.branch,
+    };
+    if (cur) payload.sha = cur.sha;
+    await gh(base + "data.js", { method: "PUT", body: JSON.stringify(payload) });
+
+    setStatus("✓ บันทึกขึ้นเว็บจริงสำเร็จ!" +
+      (backupPath ? " ไฟล์เก่าสำรองไว้ที่ " + backupPath : "") +
+      " — หน้าเว็บลูกค้าจะอัปเดตภายใน 1–2 นาที", false);
+  } catch (ex) {
+    let hint = "";
+    if (ex.status === 401) hint = " → Token ผิดหรือหมดอายุ กด ⚙ ตั้งค่าใหม่";
+    if (ex.status === 404) hint = " → Token ไม่มีสิทธิ์เข้าถึง repo นี้ (ตอนสร้างต้องเลือก repo " + REPO.owner + "/" + REPO.name + " และสิทธิ์ Contents: Read and write)";
+    if (ex.status === 409) hint = " → ไฟล์เพิ่งถูกแก้จากที่อื่น ลองกดใหม่อีกครั้ง";
+    setStatus("✕ บันทึกไม่สำเร็จ: " + ex.message + hint, true);
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+/* ═══════════════ สร้างไฟล์ data.js ═══════════════ */
 
 function downloadFile(filename, content, mime) {
   const blob = new Blob([content], { type: mime + ";charset=utf-8" });
@@ -601,118 +700,6 @@ function downloadFile(filename, content, mime) {
   a.remove();
   URL.revokeObjectURL(a.href);
 }
-
-function downloadCustomerCSV(c) {
-  downloadFile(c.id + "." + c.name + ".csv", customerCSV(c), "text/csv");
-}
-
-document.getElementById("btnAllCSV").addEventListener("click", function () {
-  DB.forEach(function (c, i) {
-    setTimeout(function () { downloadCustomerCSV(c); }, i * 400);
-  });
-});
-
-/* ═══════════════ นำเข้า CSV กลับเข้าระบบ ═══════════════ */
-
-function parseCSV(text) {
-  text = text.replace(/^\uFEFF/, "");
-  const rows = [];
-  let row = [], field = "", inQuote = false;
-  for (var i = 0; i < text.length; i++) {
-    const ch = text[i];
-    if (inQuote) {
-      if (ch === '"') {
-        if (text[i + 1] === '"') { field += '"'; i++; }
-        else inQuote = false;
-      } else field += ch;
-    } else if (ch === '"') inQuote = true;
-    else if (ch === ",") { row.push(field); field = ""; }
-    else if (ch === "\n" || ch === "\r") {
-      if (ch === "\r" && text[i + 1] === "\n") i++;
-      row.push(field); field = "";
-      if (row.length > 1 || row[0] !== "") rows.push(row);
-      row = [];
-    } else field += ch;
-  }
-  row.push(field);
-  if (row.length > 1 || row[0] !== "") rows.push(row);
-  return rows;
-}
-
-document.getElementById("btnImportCSV").addEventListener("click", function () {
-  document.getElementById("fileImport").click();
-});
-
-document.getElementById("fileImport").addEventListener("change", function (e) {
-  const files = Array.from(e.target.files);
-  if (!files.length) return;
-  let done = 0;
-  const summary = [];
-  files.forEach(function (f) {
-    const reader = new FileReader();
-    reader.onload = function () {
-      try {
-        summary.push(importCSVText(String(reader.result), f.name));
-      } catch (ex) {
-        summary.push(f.name + ": ผิดพลาด — " + ex.message);
-      }
-      if (++done === files.length) {
-        saveDraft();
-        renderList();
-        alert("นำเข้าเสร็จ:\n" + summary.join("\n"));
-      }
-    };
-    reader.readAsText(f, "utf-8");
-  });
-  e.target.value = "";
-});
-
-function importCSVText(text, filename) {
-  const rows = parseCSV(text);
-  if (rows.length < 2) throw new Error("ไม่มีข้อมูลในไฟล์");
-  const head = rows[0].map(function (h) { return h.trim().toLowerCase(); });
-  const col = {};
-  ["id", "name", "date", "type", "item", "amount", "admin"].forEach(function (c) {
-    col[c] = head.indexOf(c);
-  });
-  if (col.id === -1 || col.date === -1 || col.amount === -1)
-    throw new Error("หัวตารางต้องมีอย่างน้อย id, date, amount");
-
-  const byId = {};
-  for (var i = 1; i < rows.length; i++) {
-    const r = rows[i];
-    const id = (r[col.id] || "").trim();
-    if (!id) continue;
-    if (!byId[id]) byId[id] = {
-      id: id,
-      name: col.name !== -1 ? (r[col.name] || "").trim() : "",
-      transactions: [],
-    };
-    let amount = Math.round(+String(r[col.amount]).replace(/[, ]/g, ""));
-    if (isNaN(amount)) throw new Error("แถว " + (i + 1) + ": จำนวนเงินไม่ใช่ตัวเลข");
-    const type = col.type !== -1 ? (r[col.type] || "").trim() : "";
-    if (type === "คืน" && amount > 0) amount = -amount;
-    const tx = { date: (r[col.date] || "").trim(), type: type || (amount >= 0 ? "ฝาก" : "คืน"), amount: amount };
-    if (col.item !== -1 && r[col.item]) tx.item = r[col.item].trim();
-    if (col.admin !== -1 && r[col.admin]) tx.admin = r[col.admin].trim();
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(tx.date)) throw new Error("แถว " + (i + 1) + ": วันที่ต้องเป็นแบบ 2026-07-01");
-    byId[id].transactions.push(tx);
-  }
-
-  const importedIds = Object.keys(byId);
-  importedIds.forEach(function (id) {
-    byId[id].transactions.sort(function (a, b) { return a.date.localeCompare(b.date); });
-    const at = DB.findIndex(function (c) { return c.id.toLowerCase() === id.toLowerCase(); });
-    if (at === -1) DB.push(byId[id]);
-    else {
-      if (!byId[id].name) byId[id].name = DB[at].name;
-      DB[at] = byId[id];
-    }
-  });
-  return filename + ": นำเข้า " + importedIds.join(", ") + " สำเร็จ";
-}
-
-/* ═══════════════ สร้างไฟล์ data.js ═══════════════ */
 
 function buildDataJS() {
   const lines = [];
