@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOB PAWN SHOP — ตรวจสอบยอดจำนำ</title>
+<style>
+  :root {
+    --bg: #101623;
+    --panel: #1a2333;
+    --panel2: #212d42;
+    --line: #32405c;
+    --gold: #e8b84b;
+    --gold-dim: #b8923c;
+    --text: #e9edf5;
+    --muted: #93a1b8;
+    --red: #ff7b6e;
+    --green: #5fd8a2;
+    --green: #6fd89a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Leelawadee UI", "Segoe UI", Tahoma, "Noto Sans Thai", sans-serif;
+    min-height: 100vh;
+    padding: 24px 16px 64px;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+
+  header {
+    display: flex; align-items: center; gap: 16px;
+    padding-bottom: 20px; margin-bottom: 24px;
+    border-bottom: 2px solid var(--gold);
+  }
+  header .logo { flex: 0 0 auto; }
+  header h1 { font-size: 1.5rem; color: var(--gold); letter-spacing: .04em; }
+  header p  { color: var(--muted); font-size: .9rem; margin-top: 2px; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .search-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .search-row input {
+    flex: 1 1 240px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 1.05rem;
+    padding: 12px 14px;
+    outline: none;
+  }
+  .search-row input:focus { border-color: var(--gold); }
+  button {
+    background: var(--gold);
+    color: #26200e;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: inherit;
+    padding: 12px 22px;
+    cursor: pointer;
+  }
+  button:hover { background: #f5c85e; }
+  button.secondary {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold-dim);
+  }
+  button.secondary:hover { background: rgba(232,184,75,.1); }
+
+  .hint { color: var(--muted); font-size: .85rem; margin-top: 10px; }
+  .error { color: var(--red); font-weight: 700; margin-top: 12px; display: none; }
+
+  #result { display: none; }
+  .section-title {
+    color: var(--gold);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+  }
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .info-box {
+    background: var(--panel2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .info-box .label { color: var(--muted); font-size: .8rem; margin-bottom: 4px; }
+  .info-box .value { font-size: 1.15rem; font-weight: 700; }
+  .info-box .value.due     { color: var(--red); }
+  .info-box .value.cleared { color: var(--green); }
+
+  table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  th, td { padding: 9px 10px; border-bottom: 1px solid var(--line); text-align: left; }
+  th { color: var(--gold-dim); font-weight: 700; white-space: nowrap; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td .neg { color: var(--green); }
+  td .pos { color: var(--text); }
+  tr.zero td { color: var(--green); font-weight: 700; }
+  .table-scroll { overflow-x: auto; }
+
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+  footer { color: var(--muted); font-size: .8rem; text-align: center; margin-top: 32px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo" id="logoSlot"></div>
+    <div>
+      <h1>TOB PAWN SHOP</h1>
+      <p>โรงรับจำนำ TOB — ระบบตรวจสอบยอดจำนำและดอกเบี้ย (ดอกเบี้ยทบต้นรายวัน 3%)</p>
+    </div>
+  </header>
+
+  <div class="card">
+    <div class="section-title">ตรวจสอบยอด — กรอกเลขไอดีลูกค้า</div>
+    <form class="search-row" id="searchForm">
+      <input type="text" id="idInput" placeholder="เช่น ID00" autocomplete="off" autofocus>
+      <button type="submit">ค้นหา</button>
+    </form>
+    <div class="hint">ข้อมูลอ้างอิงจากไฟล์บัญชีของร้าน (แอดมินเป็นผู้อัปเดต) — ยอดคำนวณถึงวันปัจจุบัน หรือวันที่ยอดคงเหลือเป็น 0</div>
+    <div class="error" id="errorMsg"></div>
+  </div>
+
+  <div id="result">
+    <div class="card">
+      <div class="section-title">1) ข้อมูลลูกค้าและยอดค้างชำระ</div>
+      <div class="info-grid">
+        <div class="info-box"><div class="label">เลขไอดีลูกค้า</div><div class="value" id="rId"></div></div>
+        <div class="info-box"><div class="label">ชื่อลูกค้า</div><div class="value" id="rName"></div></div>
+        <div class="info-box"><div class="label">ยอดค้างชำระ</div><div class="value" id="rDue"></div></div>
+        <div class="info-box"><div class="label">สถานะ / ข้อมูล ณ วันที่</div><div class="value" id="rStatus"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">รายการทรัพย์ที่นำมาจำนำทั้งหมด</div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>วันที่ฝาก</th><th>รายการ</th><th class="num">มูลค่าจำนำ (XC)</th></tr></thead>
+          <tbody id="pawnRows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">รายการเดินบัญชีรายวัน (Daily Statement)</div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>วันที่</th><th>รายการ</th>
+              <th class="num">จำนวน (XC)</th>
+              <th class="num">ดอกเบี้ย 3% (XC)</th>
+              <th class="num">ยอดค้างมัดจำทั้งหมด (XC)</th>
+            </tr>
+          </thead>
+          <tbody id="ledgerRows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">2) Full Daily TOB Report</div>
+      <p style="color:var(--muted); font-size:.9rem; margin-bottom:14px;">
+        ดาวน์โหลดรายงานสรุปบัญชีจำนำรายวันฉบับทางการ พร้อมโลโก้ร้าน เงื่อนไข และช่องลงนาม
+        (เปิดไฟล์แล้วสั่งพิมพ์เป็น PDF ได้)
+      </p>
+      <div class="actions">
+        <button id="btnDownload">⬇ ดาวน์โหลดรายงาน (Full Daily TOB Report)</button>
+        <button class="secondary" id="btnPrint">🖨 พิมพ์รายงาน / บันทึกเป็น PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>TOB PAWN SHOP — เอกสารอ้างอิงภายในร้าน | ดอกเบี้ยทบต้นรายวัน 3% เริ่มคิดวันถัดจากวันฝาก</footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+"use strict";
+
+/* ---------- โลโก้ร้าน (สัญลักษณ์โรงรับจำนำสามลูกกลม + TOB) ---------- */
+function logoSVG(size) {
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<circle cx="50" cy="50" r="47" fill="#1a2333" stroke="#e8b84b" stroke-width="4"/>' +
+    '<circle cx="35" cy="38" r="11" fill="#e8b84b"/>' +
+    '<circle cx="65" cy="38" r="11" fill="#e8b84b"/>' +
+    '<circle cx="50" cy="60" r="11" fill="#e8b84b"/>' +
+    '<text x="50" y="86" text-anchor="middle" font-family="Georgia, serif" font-size="15" font-weight="bold" fill="#e8b84b">TOB</text>' +
+    '</svg>';
+}
+document.getElementById("logoSlot").innerHTML = logoSVG(58);
+
+/* ---------- เครื่องมือวันที่ / ตัวเลข ---------- */
+function parseISO(s) {
+  const p = s.split("-");
+  return new Date(+p[0], +p[1] - 1, +p[2], 12, 0, 0); // เที่ยงวัน กัน timezone เพี้ยน
+}
+function isoKey(d) {
+  return d.getFullYear() + "-" +
+    String(d.getMonth() + 1).padStart(2, "0") + "-" +
+    String(d.getDate()).padStart(2, "0");
+}
+function fmtDate(d) { // DD/MM/YY
+  return String(d.getDate()).padStart(2, "0") + "/" +
+    String(d.getMonth() + 1).padStart(2, "0") + "/" +
+    String(d.getFullYear()).slice(-2);
+}
+function fmtDateFull(d) { // DD/MM/YYYY
+  return String(d.getDate()).padStart(2, "0") + "/" +
+    String(d.getMonth() + 1).padStart(2, "0") + "/" + d.getFullYear();
+}
+function fmtNum(n) { return n.toLocaleString("en-US"); }
+function today() { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate(), 12, 0, 0); }
+
+/* ---------- เครื่องคิดดอกเบี้ย ----------
+ * กติกา (ตามบัญชีของร้าน):
+ *  - วันแรก (วันฝาก) ไม่คิดดอกเบี้ย
+ *  - วันถัดไปคิดดอกเบี้ยทบต้น 3% ของยอดคงเหลือเมื่อสิ้นวันก่อนหน้า
+ *  - วันที่มีรายการคืน จะบวกดอกเบี้ยของวันนั้นก่อน แล้วจึงหักยอดคืน
+ *  - คำนวณตั้งแต่วันแรกจนถึงวันปัจจุบัน หรือวันที่ยอดคงเหลือ ≤ 0 (แล้วแต่ว่าถึงก่อน)
+ */
+function computeLedger(customer, asOf) {
+  const txs = customer.transactions.slice()
+    .sort((a, b) => a.date.localeCompare(b.date));
+  if (txs.length === 0) return { rows: [], balance: 0, totals: { deposit: 0, interest: 0, repaid: 0 }, closedDate: null };
+
+  const byDate = {};
+  txs.forEach(tx => { (byDate[tx.date] = byDate[tx.date] || []).push(tx); });
+
+  const start = parseISO(txs[0].date);
+  let balance = 0;
+  let first = true;
+  const rows = [];
+  const totals = { deposit: 0, interest: 0, repaid: 0 };
+  let closedDate = null;
+  const d = new Date(start);
+
+  while (true) {
+    let interest = 0;
+    if (!first && balance > 0) {
+      interest = Math.round(balance * INTEREST_RATE);
+      balance += interest;
+      totals.interest += interest;
+    }
+    const dayTxs = byDate[isoKey(d)] || [];
+    dayTxs.forEach(tx => {
+      balance += tx.amount;
+      if (tx.amount > 0) totals.deposit += tx.amount;
+      else totals.repaid += -tx.amount;
+    });
+    rows.push({ date: new Date(d), interest: interest, txs: dayTxs, balance: balance });
+
+    if (balance <= 0) { closedDate = new Date(d); break; }
+    if (d.getTime() >= asOf.getTime()) break;
+    d.setDate(d.getDate() + 1);
+    first = false;
+  }
+  return { rows: rows, balance: balance, totals: totals, closedDate: closedDate };
+}
+
+function rowLabel(row) {
+  const parts = [];
+  row.txs.forEach(tx => {
+    let t = tx.type || (tx.amount >= 0 ? "ฝาก" : "คืน");
+    if (tx.item) t += " " + tx.item;
+    parts.push(t);
+  });
+  if (row.interest > 0) parts.push("ดอกเบี้ย");
+  if (parts.length === 0) parts.push("ดอกเบี้ย");
+  return parts.join(" + ");
+}
+
+/* ---------- ค้นหาและแสดงผล ---------- */
+let current = null; // { customer, ledger, asOf }
+
+document.getElementById("searchForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const q = document.getElementById("idInput").value.trim().toLowerCase();
+  const errEl = document.getElementById("errorMsg");
+  const resEl = document.getElementById("result");
+  errEl.style.display = "none";
+  resEl.style.display = "none";
+  if (!q) return;
+
+  const customer = CUSTOMERS.find(c => c.id.toLowerCase() === q);
+  if (!customer) {
+    errEl.textContent = "ไม่พบเลขไอดี “" + document.getElementById("idInput").value.trim() + "” กรุณาตรวจสอบอีกครั้ง หรือติดต่อแอดมิน";
+    errEl.style.display = "block";
+    return;
+  }
+
+  const asOf = today();
+  const ledger = computeLedger(customer, asOf);
+  current = { customer: customer, ledger: ledger, asOf: asOf };
+  render(current);
+  resEl.style.display = "block";
+});
+
+function render(cur) {
+  const c = cur.customer, L = cur.ledger;
+  document.getElementById("rId").textContent = c.id;
+  document.getElementById("rName").textContent = c.name;
+
+  const dueEl = document.getElementById("rDue");
+  dueEl.textContent = fmtNum(Math.max(L.balance, 0)) + " XC";
+  dueEl.className = "value " + (L.balance > 0 ? "due" : "cleared");
+
+  const stEl = document.getElementById("rStatus");
+  if (L.balance <= 0 && L.closedDate) {
+    stEl.textContent = "ไถ่ถอนครบแล้ว (" + fmtDate(L.closedDate) + ")";
+    stEl.className = "value cleared";
+  } else {
+    stEl.textContent = "ค้างชำระ — ณ " + fmtDate(cur.asOf);
+    stEl.className = "value due";
+  }
+
+  // รายการจำนำ (เฉพาะรายการค่าบวก)
+  const pawnBody = document.getElementById("pawnRows");
+  pawnBody.innerHTML = "";
+  c.transactions.slice().sort((a, b) => a.date.localeCompare(b.date))
+    .filter(tx => tx.amount > 0)
+    .forEach(tx => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = "<td>" + fmtDate(parseISO(tx.date)) + "</td>" +
+        "<td>" + (tx.item || "-") + "</td>" +
+        "<td class='num'>" + fmtNum(tx.amount) + "</td>";
+      pawnBody.appendChild(tr);
+    });
+
+  // ตารางเดินบัญชีรายวัน
+  const body = document.getElementById("ledgerRows");
+  body.innerHTML = "";
+  L.rows.forEach(row => {
+    const amt = row.txs.reduce((s, tx) => s + tx.amount, 0);
+    const tr = document.createElement("tr");
+    if (row.balance <= 0) tr.className = "zero";
+    tr.innerHTML =
+      "<td>" + fmtDate(row.date) + "</td>" +
+      "<td>" + rowLabel(row) + "</td>" +
+      "<td class='num'>" + (row.txs.length ? "<span class='" + (amt < 0 ? "neg" : "pos") + "'>" + fmtNum(amt) + "</span>" : "-") + "</td>" +
+      "<td class='num'>" + (row.interest ? fmtNum(row.interest) : "-") + "</td>" +
+      "<td class='num'>" + fmtNum(row.balance) + "</td>";
+    body.appendChild(tr);
+  });
+}
+
+/* ---------- Full Daily TOB Report (ฉบับทางการ) ---------- */
+function buildReportHTML(cur) {
+  const c = cur.customer, L = cur.ledger;
+  const issued = new Date();
+  const asOfDate = (L.balance <= 0 && L.closedDate) ? L.closedDate : cur.asOf;
+  const reportNo = "TOB-" + c.id + "-" + isoKey(asOfDate).replace(/-/g, "");
+  const status = (L.balance <= 0)
+    ? "ไถ่ถอนครบถ้วนแล้ว (ปิดบัญชีวันที่ " + fmtDateFull(L.closedDate) + ")"
+    : "ค้างชำระ";
+
+  let ledgerRows = "";
+  L.rows.forEach(row => {
+    const amt = row.txs.reduce((s, tx) => s + tx.amount, 0);
+    ledgerRows +=
+      "<tr" + (row.balance <= 0 ? " class='closed'" : "") + ">" +
+      "<td>" + fmtDate(row.date) + "</td>" +
+      "<td>" + rowLabel(row) + "</td>" +
+      "<td class='num'>" + (row.txs.length ? fmtNum(amt) : "-") + "</td>" +
+      "<td class='num'>" + (row.interest ? fmtNum(row.interest) : "-") + "</td>" +
+      "<td class='num'>" + fmtNum(row.balance) + "</td></tr>";
+  });
+
+  let pawnRows = "";
+  c.transactions.slice().sort((a, b) => a.date.localeCompare(b.date))
+    .filter(tx => tx.amount > 0)
+    .forEach((tx, i) => {
+      pawnRows += "<tr><td>" + (i + 1) + "</td><td>" + fmtDate(parseISO(tx.date)) + "</td>" +
+        "<td>" + (tx.item || "-") + "</td><td class='num'>" + fmtNum(tx.amount) + "</td></tr>";
+    });
+
+  return "<!DOCTYPE html><html lang='th'><head><meta charset='UTF-8'>" +
+"<title>Full Daily TOB Report — " + c.id + "</title><style>" +
+"*{margin:0;padding:0;box-sizing:border-box}" +
+"body{font-family:'Leelawadee UI','Segoe UI',Tahoma,'Noto Sans Thai',sans-serif;color:#1c2333;background:#f2f3f6;padding:24px}" +
+".sheet{max-width:800px;margin:0 auto;background:#fff;border:1px solid #d8dbe2;padding:36px 42px}" +
+".head{display:flex;align-items:center;gap:18px;border-bottom:3px double #b8923c;padding-bottom:16px;margin-bottom:18px}" +
+".head h1{font-size:1.35rem;color:#8a6a1f;letter-spacing:.05em}" +
+".head .sub{color:#555;font-size:.9rem;margin-top:2px}" +
+".meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:.88rem;color:#444;margin-bottom:18px}" +
+"h2{font-size:1rem;color:#8a6a1f;margin:20px 0 8px;border-bottom:1px solid #e3d5ac;padding-bottom:4px}" +
+"table{width:100%;border-collapse:collapse;font-size:.88rem;margin-bottom:6px}" +
+"th,td{border:1px solid #c9cdd6;padding:6px 9px;text-align:left}" +
+"th{background:#f5efdd;color:#6d5417}" +
+"td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}" +
+"tr.closed td{background:#eef8ef;font-weight:700}" +
+".kv{width:auto}.kv td{border:none;padding:3px 14px 3px 0;font-size:.92rem}" +
+".kv td:first-child{color:#666;white-space:nowrap}" +
+".summary td{font-weight:700}" +
+".due{color:#b0322a}.ok{color:#1c7c3c}" +
+".terms{font-size:.82rem;color:#555;line-height:1.55;margin-top:6px}" +
+".terms li{margin-left:18px;margin-bottom:2px}" +
+".sign{display:flex;justify-content:space-between;gap:30px;margin-top:44px}" +
+".sign div{flex:1;text-align:center;font-size:.88rem;color:#444}" +
+".sign .line{border-top:1px solid #888;margin:36px 12px 6px}" +
+".foot{margin-top:26px;padding-top:10px;border-top:1px solid #ddd;font-size:.75rem;color:#888;text-align:center}" +
+".printbar{max-width:800px;margin:0 auto 14px;text-align:right}" +
+".printbar button{background:#b8923c;color:#fff;border:none;border-radius:6px;padding:9px 18px;font-size:.95rem;cursor:pointer;font-family:inherit}" +
+"@media print{body{background:#fff;padding:0}.sheet{border:none;max-width:none;padding:14mm}.printbar{display:none}}" +
+"</style></head><body>" +
+"<div class='printbar'><button onclick='window.print()'>🖨 พิมพ์ / บันทึกเป็น PDF</button></div>" +
+"<div class='sheet'>" +
+  "<div class='head'>" + logoSVG(72) +
+    "<div><h1>TOB PAWN SHOP — โรงรับจำนำ TOB</h1>" +
+    "<div class='sub'>รายงานสรุปบัญชีจำนำรายวันฉบับเต็ม (Full Daily TOB Report) — เอกสารทางการของร้าน</div></div>" +
+  "</div>" +
+  "<div class='meta'><span>เลขที่รายงาน: <b>" + reportNo + "</b></span>" +
+  "<span>วันที่ออกรายงาน: <b>" + fmtDateFull(issued) + "</b></span>" +
+  "<span>ข้อมูล ณ วันที่: <b>" + fmtDateFull(asOfDate) + "</b></span></div>" +
+
+  "<h2>1. ข้อมูลลูกค้า</h2>" +
+  "<table class='kv'><tr><td>เลขไอดีลูกค้า</td><td><b>" + c.id + "</b></td></tr>" +
+  "<tr><td>ชื่อลูกค้า</td><td><b>" + c.name + "</b></td></tr>" +
+  "<tr><td>สถานะบัญชี</td><td><b class='" + (L.balance <= 0 ? "ok" : "due") + "'>" + status + "</b></td></tr></table>" +
+
+  "<h2>2. รายการทรัพย์ที่นำมาจำนำ</h2>" +
+  "<table><thead><tr><th>ลำดับ</th><th>วันที่ฝาก</th><th>รายการ</th><th class='num'>มูลค่าจำนำ (XC)</th></tr></thead>" +
+  "<tbody>" + pawnRows + "</tbody></table>" +
+
+  "<h2>3. รายการเดินบัญชีรายวัน</h2>" +
+  "<table><thead><tr><th>วันที่</th><th>รายการ</th><th class='num'>จำนวน (XC)</th>" +
+  "<th class='num'>ดอกเบี้ย 3% (XC)</th><th class='num'>ยอดค้างมัดจำทั้งหมด (XC)</th></tr></thead>" +
+  "<tbody>" + ledgerRows + "</tbody></table>" +
+
+  "<h2>4. สรุปยอด</h2>" +
+  "<table class='summary'><tr><td>ยอดฝาก (เงินต้น) รวม</td><td class='num'>" + fmtNum(L.totals.deposit) + " XC</td></tr>" +
+  "<tr><td>ดอกเบี้ยสะสมรวม</td><td class='num'>" + fmtNum(L.totals.interest) + " XC</td></tr>" +
+  "<tr><td>ยอดชำระคืนรวม</td><td class='num'>" + fmtNum(L.totals.repaid) + " XC</td></tr>" +
+  "<tr><td>ยอดค้างชำระคงเหลือ</td><td class='num " + (L.balance > 0 ? "due" : "ok") + "'>" + fmtNum(Math.max(L.balance, 0)) + " XC</td></tr></table>" +
+
+  "<h2>5. เงื่อนไขและหมายเหตุ</h2>" +
+  "<ul class='terms'>" +
+  "<li>อัตราดอกเบี้ยแบบทบต้นรายวัน 3% ของยอดค้างมัดจำ เริ่มคิดตั้งแต่วันถัดจากวันฝาก</li>" +
+  "<li>วันที่มีการชำระคืน ระบบจะคิดดอกเบี้ยของวันนั้นก่อน แล้วจึงหักยอดชำระคืน</li>" +
+  "<li>ทรัพย์จำนำจะคืนให้เมื่อชำระยอดค้างครบถ้วน (ยอดคงเหลือเป็น 0)</li>" +
+  "<li>ข้อมูลในรายงานอ้างอิงจากบัญชีของร้านซึ่งแอดมินเป็นผู้บันทึกและปรับปรุง หากพบข้อผิดพลาดกรุณาติดต่อแอดมิน</li>" +
+  "<li>รายงานฉบับนี้ออกโดยระบบอัตโนมัติของร้าน ใช้เพื่อการอ้างอิงภายในเท่านั้น</li>" +
+  "</ul>" +
+
+  "<div class='sign'>" +
+  "<div><div class='line'></div>ผู้จัดทำรายงาน (แอดมินร้าน)<br>วันที่ ............................</div>" +
+  "<div><div class='line'></div>ผู้รับรายงาน (ลูกค้า)<br>วันที่ ............................</div>" +
+  "</div>" +
+
+  "<div class='foot'>TOB PAWN SHOP — Full Daily TOB Report | เลขที่ " + reportNo +
+  " | ออกเมื่อ " + fmtDateFull(issued) + "</div>" +
+"</div></body></html>";
+}
+
+document.getElementById("btnDownload").addEventListener("click", function () {
+  if (!current) return;
+  const html = buildReportHTML(current);
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "TOB_Daily_Report_" + current.customer.id + "_" + isoKey(current.asOf) + ".html";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(a.href);
+});
+
+document.getElementById("btnPrint").addEventListener("click", function () {
+  if (!current) return;
+  const w = window.open("", "_blank");
+  w.document.write(buildReportHTML(current));
+  w.document.close();
+  w.focus();
+});
+</script>
+</body>
+</html>
