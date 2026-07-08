@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NEXUS PAWN — ตรวจสอบยอดจำนำ</title>
+<script>document.documentElement.setAttribute("data-theme", localStorage.getItem("nexus_theme") || "dark");</script>
 <style>
   :root {
     --bg: #101623;
@@ -15,8 +16,23 @@
     --text: #e9edf5;
     --muted: #93a1b8;
     --red: #ff7b6e;
-    --green: #5fd8a2;
     --green: #6fd89a;
+    --btn-bg: #e8b84b;
+    --nx: #6ea8ff;
+  }
+  :root[data-theme="light"] {
+    --bg: #eef1f6;
+    --panel: #ffffff;
+    --panel2: #f4f6fa;
+    --line: #d8dde7;
+    --gold: #a07d22;
+    --gold-dim: #8a6a1f;
+    --text: #1d2433;
+    --muted: #5b6579;
+    --red: #b0322a;
+    --green: #1c7c3c;
+    --btn-bg: #e8b84b;
+    --nx: #23407a;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -35,8 +51,20 @@
   }
   header .logo { flex: 0 0 auto; }
   header h1 { font-size: 1.5rem; color: var(--gold); letter-spacing: .04em; }
-  header h1 .nx { color: #6ea8ff; }
+  header h1 .nx { color: var(--nx); }
   header h1 .pw { color: var(--gold); }
+  .theme-btn {
+    margin-left: auto;
+    flex: 0 0 auto;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    width: 42px; height: 42px;
+    font-size: 1.15rem;
+    padding: 0;
+    cursor: pointer;
+  }
+  .theme-btn:hover { background: transparent; border-color: var(--gold); }
   header p  { color: var(--muted); font-size: .9rem; margin-top: 2px; }
 
   .card {
@@ -60,7 +88,7 @@
   }
   .search-row input:focus { border-color: var(--gold); }
   button {
-    background: var(--gold);
+    background: var(--btn-bg);
     color: #26200e;
     border: none;
     border-radius: 8px;
@@ -128,6 +156,7 @@
       <h1><span class="nx">NEXUS</span> <span class="pw">PAWN</span></h1>
       <p>โรงรับจำนำ NEXUS PAWN — ระบบตรวจสอบยอดจำนำและดอกเบี้ย (ดอกเบี้ยทบต้นรายวัน 3%)</p>
     </div>
+    <button type="button" class="theme-btn" id="themeBtn" title="สลับธีมมืด/สว่าง">☀️</button>
   </header>
 
   <div class="card">

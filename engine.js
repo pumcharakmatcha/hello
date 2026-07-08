@@ -10,6 +10,22 @@ function logoSVG(size) {
   return '<img src="' + LOGO_SRC + '" width="' + size + '" height="' + size + '" alt="NEXUS PAWN" style="display:block">';
 }
 
+/* ---------- ธีมมืด/สว่าง (จำค่าที่เลือกไว้ ใช้ร่วมกันทุกหน้า) ---------- */
+(function () {
+  function applyTheme(t) {
+    document.documentElement.setAttribute("data-theme", t);
+    const b = document.getElementById("themeBtn");
+    if (b) b.textContent = t === "light" ? "🌙" : "☀️"; // ไอคอน = ธีมที่จะสลับไป
+  }
+  applyTheme(localStorage.getItem("nexus_theme") || "dark");
+  const b = document.getElementById("themeBtn");
+  if (b) b.addEventListener("click", function () {
+    const next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+    localStorage.setItem("nexus_theme", next);
+    applyTheme(next);
+  });
+})();
+
 /* ---------- เครื่องมือวันที่ / ตัวเลข ---------- */
 function parseISO(s) {
   const p = s.split("-");
