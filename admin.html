@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>TOB PAWN SHOP — ระบบหลังร้าน (Admin)</title>
+<title>NEXUS PAWN — ระบบหลังร้าน (Admin)</title>
 <style>
   :root {
     --bg: #101623;
@@ -34,6 +34,8 @@
     border-bottom: 2px solid var(--gold);
   }
   header h1 { font-size: 1.5rem; color: var(--gold); letter-spacing: .04em; }
+  header h1 .nx { color: #6ea8ff; }
+  header h1 .pw { color: var(--gold); }
   header p  { color: var(--muted); font-size: .9rem; margin-top: 2px; }
 
   .card {
@@ -130,8 +132,8 @@
   <header>
     <div id="logoSlot"></div>
     <div>
-      <h1>TOB PAWN SHOP — ระบบหลังร้าน</h1>
-      <p>สำหรับแอดมินเท่านั้น: เพิ่ม/แก้ไขข้อมูลลูกค้า, ดาวน์โหลด CSV รายบุคคล และสร้างไฟล์ data.js</p>
+      <h1><span class="nx">NEXUS</span> <span class="pw">PAWN</span> — ระบบหลังร้าน</h1>
+      <p>สำหรับแอดมินเท่านั้น: เพิ่ม/แก้ไขข้อมูลลูกค้า แล้วบันทึกขึ้นเว็บจริงได้ในคลิกเดียว</p>
     </div>
   </header>
 
@@ -229,7 +231,7 @@
 
   </div>
 
-  <footer>TOB PAWN SHOP — ระบบหลังร้าน | ห้ามเผยแพร่ลิงก์หน้านี้ให้ลูกค้า</footer>
+  <footer>NEXUS PAWN — ระบบหลังร้าน | ห้ามเผยแพร่ลิงก์หน้านี้ให้ลูกค้า</footer>
 </div>
 
 <script src="data.js"></script>
@@ -704,7 +706,7 @@ function downloadFile(filename, content, mime) {
 function buildDataJS() {
   const lines = [];
   lines.push("/* ============================================================");
-  lines.push(" *  ข้อมูลลูกค้าโรงรับจำนำ TOB — สร้างโดยหน้าแอดมิน (admin.html)");
+  lines.push(" *  ข้อมูลลูกค้าโรงรับจำนำ NEXUS PAWN — สร้างโดยหน้าแอดมิน (admin.html)");
   lines.push(" *  สร้างเมื่อ: " + fmtDateFull(new Date()) + " โดย " + currentAdmin());
   lines.push(" *  นำไฟล์นี้ไปวางแทนที่ data.js ใน GitHub เพื่ออัปเดตหน้าเว็บลูกค้า");
   lines.push(" * ============================================================ */");

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TOB PAWN SHOP — ตรวจสอบยอดจำนำ</title>
+<title>NEXUS PAWN — ตรวจสอบยอดจำนำ</title>
 <style>
   :root {
     --bg: #101623;
@@ -35,6 +35,8 @@
   }
   header .logo { flex: 0 0 auto; }
   header h1 { font-size: 1.5rem; color: var(--gold); letter-spacing: .04em; }
+  header h1 .nx { color: #6ea8ff; }
+  header h1 .pw { color: var(--gold); }
   header p  { color: var(--muted); font-size: .9rem; margin-top: 2px; }
 
   .card {
@@ -123,8 +125,8 @@
   <header>
     <div class="logo" id="logoSlot"></div>
     <div>
-      <h1>TOB PAWN SHOP</h1>
-      <p>โรงรับจำนำ TOB — ระบบตรวจสอบยอดจำนำและดอกเบี้ย (ดอกเบี้ยทบต้นรายวัน 3%)</p>
+      <h1><span class="nx">NEXUS</span> <span class="pw">PAWN</span></h1>
+      <p>โรงรับจำนำ NEXUS PAWN — ระบบตรวจสอบยอดจำนำและดอกเบี้ย (ดอกเบี้ยทบต้นรายวัน 3%)</p>
     </div>
   </header>
 
@@ -177,19 +179,19 @@
     </div>
 
     <div class="card">
-      <div class="section-title">2) Full Daily TOB Report</div>
+      <div class="section-title">2) Full Daily NEXUS Report</div>
       <p style="color:var(--muted); font-size:.9rem; margin-bottom:14px;">
         ดาวน์โหลดรายงานสรุปบัญชีจำนำรายวันฉบับทางการ พร้อมโลโก้ร้าน เงื่อนไข และช่องลงนาม
         (เปิดไฟล์แล้วสั่งพิมพ์เป็น PDF ได้)
       </p>
       <div class="actions">
-        <button id="btnDownload">⬇ ดาวน์โหลดรายงาน (Full Daily TOB Report)</button>
+        <button id="btnDownload">⬇ ดาวน์โหลดรายงาน (Full Daily NEXUS Report)</button>
         <button class="secondary" id="btnPrint">🖨 พิมพ์รายงาน / บันทึกเป็น PDF</button>
       </div>
     </div>
   </div>
 
-  <footer>TOB PAWN SHOP — เอกสารอ้างอิงภายในร้าน | ดอกเบี้ยทบต้นรายวัน 3% เริ่มคิดวันถัดจากวันฝาก</footer>
+  <footer>NEXUS PAWN — เอกสารอ้างอิงภายในร้าน | ดอกเบี้ยทบต้นรายวัน 3% เริ่มคิดวันถัดจากวันฝาก</footer>
 </div>
 
 <script src="data.js"></script>
@@ -274,12 +276,12 @@ function render(cur) {
   });
 }
 
-/* ---------- Full Daily TOB Report (ฉบับทางการ) ---------- */
+/* ---------- Full Daily NEXUS Report (ฉบับทางการ) ---------- */
 function buildReportHTML(cur) {
   const c = cur.customer, L = cur.ledger;
   const issued = new Date();
   const asOfDate = (L.balance <= 0 && L.closedDate) ? L.closedDate : cur.asOf;
-  const reportNo = "TOB-" + c.id + "-" + isoKey(asOfDate).replace(/-/g, "");
+  const reportNo = "NP-" + c.id + "-" + isoKey(asOfDate).replace(/-/g, "");
   const status = (L.balance <= 0)
     ? "ไถ่ถอนครบถ้วนแล้ว (ปิดบัญชีวันที่ " + fmtDateFull(L.closedDate) + ")"
     : "ค้างชำระ";
@@ -306,12 +308,13 @@ function buildReportHTML(cur) {
     });
 
   return "<!DOCTYPE html><html lang='th'><head><meta charset='UTF-8'>" +
-"<title>Full Daily TOB Report — " + c.id + "</title><style>" +
+"<title>Full Daily NEXUS Report — " + c.id + "</title><style>" +
 "*{margin:0;padding:0;box-sizing:border-box}" +
 "body{font-family:'Leelawadee UI','Segoe UI',Tahoma,'Noto Sans Thai',sans-serif;color:#1c2333;background:#f2f3f6;padding:24px}" +
 ".sheet{max-width:800px;margin:0 auto;background:#fff;border:1px solid #d8dbe2;padding:36px 42px}" +
 ".head{display:flex;align-items:center;gap:18px;border-bottom:3px double #b8923c;padding-bottom:16px;margin-bottom:18px}" +
 ".head h1{font-size:1.35rem;color:#8a6a1f;letter-spacing:.05em}" +
+".head h1 .nx{color:#23407a}.head h1 .pw{color:#a07d22}" +
 ".head .sub{color:#555;font-size:.9rem;margin-top:2px}" +
 ".meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:.88rem;color:#444;margin-bottom:18px}" +
 "h2{font-size:1rem;color:#8a6a1f;margin:20px 0 8px;border-bottom:1px solid #e3d5ac;padding-bottom:4px}" +
@@ -337,8 +340,8 @@ function buildReportHTML(cur) {
 "<div class='printbar'><button onclick='window.print()'>🖨 พิมพ์ / บันทึกเป็น PDF</button></div>" +
 "<div class='sheet'>" +
   "<div class='head'>" + logoSVG(72) +
-    "<div><h1>TOB PAWN SHOP — โรงรับจำนำ TOB</h1>" +
-    "<div class='sub'>รายงานสรุปบัญชีจำนำรายวันฉบับเต็ม (Full Daily TOB Report) — เอกสารทางการของร้าน</div></div>" +
+    "<div><h1><span class='nx'>NEXUS</span> <span class='pw'>PAWN</span> — โรงรับจำนำเน็กซัส</h1>" +
+    "<div class='sub'>รายงานสรุปบัญชีจำนำรายวันฉบับเต็ม (Full Daily NEXUS Report) — เอกสารทางการของร้าน</div></div>" +
   "</div>" +
   "<div class='meta'><span>เลขที่รายงาน: <b>" + reportNo + "</b></span>" +
   "<span>วันที่ออกรายงาน: <b>" + fmtDateFull(issued) + "</b></span>" +
@@ -378,7 +381,7 @@ function buildReportHTML(cur) {
   "<div><div class='line'></div>ผู้รับรายงาน (ลูกค้า)<br>วันที่ ............................</div>" +
   "</div>" +
 
-  "<div class='foot'>TOB PAWN SHOP — Full Daily TOB Report | เลขที่ " + reportNo +
+  "<div class='foot'>NEXUS PAWN — Full Daily NEXUS Report | เลขที่ " + reportNo +
   " | ออกเมื่อ " + fmtDateFull(issued) + "</div>" +
 "</div></body></html>";
 }
@@ -389,7 +392,7 @@ document.getElementById("btnDownload").addEventListener("click", function () {
   const blob = new Blob([html], { type: "text/html;charset=utf-8" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "TOB_Daily_Report_" + current.customer.id + "_" + isoKey(current.asOf) + ".html";
+  a.download = "NEXUS_Report_" + current.customer.id + "_" + isoKey(current.asOf) + ".html";
   document.body.appendChild(a);
   a.click();
   a.remove();
