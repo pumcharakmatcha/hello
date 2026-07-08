@@ -154,7 +154,7 @@
     <div class="logo" id="logoSlot"></div>
     <div>
       <h1><span class="nx">NEXUS</span> <span class="pw">PAWN</span></h1>
-      <p>โรงรับจำนำ NEXUS PAWN — ระบบตรวจสอบยอดจำนำและดอกเบี้ย (ดอกเบี้ยทบต้นรายวัน 3%)</p>
+      <p>โรงรับจำนำ NEXUS PAWN — เช็กยอดจำนำออนไลน์ได้ตลอด 24 ชั่วโมง</p>
     </div>
     <button type="button" class="theme-btn" id="themeBtn" title="สลับธีมมืด/สว่าง">☀️</button>
   </header>
@@ -198,7 +198,7 @@
             <tr>
               <th>วันที่</th><th>รายการ</th>
               <th class="num">จำนวน (XC)</th>
-              <th class="num">ดอกเบี้ย 3% (XC)</th>
+              <th class="num">ดอกเบี้ย (XC)</th>
               <th class="num">ยอดค้างมัดจำทั้งหมด (XC)</th>
             </tr>
           </thead>
@@ -220,7 +220,7 @@
     </div>
   </div>
 
-  <footer>NEXUS PAWN — เอกสารอ้างอิงภายในร้าน | ดอกเบี้ยทบต้นรายวัน 3% เริ่มคิดวันถัดจากวันฝาก</footer>
+  <footer>NEXUS PAWN — เอกสารอ้างอิงภายในร้าน | <a href="rules.html" style="color:var(--gold)">📜 กฎและเงื่อนไขการจำนำ</a></footer>
 </div>
 
 <script src="data.js"></script>
@@ -387,7 +387,7 @@ function buildReportHTML(cur) {
 
   "<h2>3. รายการเดินบัญชีรายวัน</h2>" +
   "<table><thead><tr><th>วันที่</th><th>รายการ</th><th class='num'>จำนวน (XC)</th>" +
-  "<th class='num'>ดอกเบี้ย 3% (XC)</th><th class='num'>ยอดค้างมัดจำทั้งหมด (XC)</th></tr></thead>" +
+  "<th class='num'>ดอกเบี้ย (XC)</th><th class='num'>ยอดค้างมัดจำทั้งหมด (XC)</th></tr></thead>" +
   "<tbody>" + ledgerRows + "</tbody></table>" +
 
   "<h2>4. สรุปยอด</h2>" +
