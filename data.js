@@ -13,4 +13,12 @@ const SHOP = {
 };
 
 const CUSTOMERS = [
+  {
+    id: "00001",
+    name: "Pumcha",
+    transactions: [
+      { date: "2026-07-06", type: "ฝาก", item: "Jade 2 เม็ด", amount: 400000, admin: "Pumcha" },
+      { date: "2026-07-07", type: "คืน", amount: -250000, admin: "Pumcha" },
+    ],
+  },
 ];
