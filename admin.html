@@ -231,7 +231,7 @@
       <div class="row" style="margin-bottom:14px">
         <div>
           <label>เลขไอดีลูกค้า</label>
-          <input type="text" id="edId" placeholder="เช่น ID02">
+          <input type="text" id="edId" placeholder="เช่น 12345">
         </div>
         <div style="flex:1">
           <label>ชื่อลูกค้า</label>
@@ -274,7 +274,7 @@ document.getElementById("logoSlot").innerHTML = logoSVG(58);
 /* ═══════════════ ระบบเข้าสู่ระบบ ═══════════════ */
 
 // รายชื่อแอดมิน (ใช้แสดงใน dropdown — ชื่อไม่ใช่ความลับ)
-const ADMINS = ["pumcha", "sen"];
+const ADMINS = ["Pumcha", "Sen", "Matcha"];
 
 // SHA-256 (ฝังในไฟล์ ไม่ต้องพึ่งอินเทอร์เน็ต)
 function sha256(ascii) {
@@ -337,8 +337,9 @@ window.makeKey = makeKey;
 
 // กุญแจเข้าระบบ (SHA-256 ของ ชื่อ:PIN:TOB) — เปลี่ยนรหัสโดยแทนค่าในลิสต์นี้ด้วยผลจาก makeKey()
 const _k = [
-  "07686b0ffff1930ad12e3cb2ca271f2ef6d115457aba819c7f392320cb5bc7ab",
-  "e317838f1a3f0858f3a6496bfcd2b32771a5d791a2b86f98438e3d8840886a2f",
+  "61e7085d0b0fa11afffe2e9858858c673ab53046743aa1dc5452135ee24142cf",
+  "9f892aa35c37917e5b16e122b81bc43071ff9441c9ca3f0f60181964c33ba358",
+  "7c930acc435c13b41c9a32d303154aefaeacf08460e755ac9526bb635904ad48",
 ];
 
 const loginUserSel = document.getElementById("loginUser");
