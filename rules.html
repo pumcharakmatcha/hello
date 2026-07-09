@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ข้อกำหนดและเงื่อนไขการรับจำนำ — NEXUS PAWN</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Leelawadee UI", "Segoe UI", Tahoma, "Noto Sans Thai", sans-serif;
+    color: #1c2333;
+    background: #f2f3f6;
+    padding: 24px;
+  }
+  .printbar { max-width: 800px; margin: 0 auto 14px; display: flex; gap: 10px; justify-content: flex-end; }
+  .printbar a, .printbar button {
+    background: #b8923c; color: #fff; border: none; border-radius: 6px;
+    padding: 9px 18px; font-size: .95rem; cursor: pointer; font-family: inherit;
+    text-decoration: none; display: inline-block;
+  }
+  .printbar a.back { background: transparent; color: #8a6a1f; border: 1px solid #b8923c; }
+  .sheet {
+    max-width: 800px; margin: 0 auto; background: #fff;
+    border: 1px solid #d8dbe2; padding: 36px 42px;
+  }
+  .head {
+    display: flex; align-items: center; gap: 18px;
+    border-bottom: 3px double #b8923c; padding-bottom: 16px; margin-bottom: 6px;
+  }
+  .head h1 { font-size: 1.3rem; color: #8a6a1f; letter-spacing: .05em; }
+  .head h1 .nx { color: #23407a; }
+  .head h1 .pw { color: #a07d22; }
+  .head .sub { color: #555; font-size: .9rem; margin-top: 2px; }
+  .doc-title { text-align: center; font-size: 1.15rem; font-weight: 700; color: #1c2333; margin: 22px 0 4px; }
+  .doc-sub { text-align: center; color: #666; font-size: .85rem; margin-bottom: 20px; }
+  h2 { font-size: 1rem; color: #8a6a1f; margin: 22px 0 8px; border-bottom: 1px solid #e3d5ac; padding-bottom: 4px; }
+  p, li { font-size: .92rem; line-height: 1.75; }
+  p.intro { text-indent: 2.5em; margin-bottom: 6px; }
+  ol.terms { counter-reset: item; list-style: none; }
+  ol.terms > li { margin: 0 0 8px 0; padding-left: 3.4em; position: relative; counter-increment: item; }
+  ol.terms > li::before {
+    content: "ข้อ " counter(item) ".";
+    position: absolute; left: 0; font-weight: 700; color: #8a6a1f;
+  }
+  ul.sub { margin: 6px 0 4px 1.5em; }
+  ul.sub li { margin-bottom: 4px; }
+  .seize {
+    background: #fdf6e8; border: 1px solid #e3d5ac; border-radius: 8px;
+    padding: 12px 16px; margin: 8px 0;
+  }
+  .seize b.title { color: #b0322a; }
+  .sign { display: flex; justify-content: space-between; gap: 30px; margin-top: 48px; }
+  .sign div { flex: 1; text-align: center; font-size: .88rem; color: #444; }
+  .sign .line { border-top: 1px solid #888; margin: 40px 12px 6px; }
+  .foot { margin-top: 28px; padding-top: 10px; border-top: 1px solid #ddd; font-size: .75rem; color: #888; text-align: center; }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .sheet { border: none; max-width: none; padding: 12mm; }
+    .printbar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="printbar">
+  <a class="back" href="index.html">← กลับหน้าเช็กยอด</a>
+  <button onclick="window.print()">🖨 พิมพ์ / บันทึกเป็น PDF</button>
+</div>
+
+<div class="sheet">
+  <div class="head">
+    <span id="logoSlot"></span>
+    <div>
+      <h1><span class="nx">NEXUS</span> <span class="pw">PAWN</span> — โรงรับจำนำเน็กซัส</h1>
+      <div class="sub">เอกสารทางการของร้าน — ฉบับประกาศใช้ วันที่ 8 กรกฎาคม 2026</div>
+    </div>
+  </div>
+
+  <div class="doc-title">ข้อกำหนดและเงื่อนไขการรับจำนำ (สัญญาการจำนำ)</div>
+  <div class="doc-sub">เลขที่เอกสาร NP-TERMS-2026-001</div>
+
+  <h2>คำนำ</h2>
+  <p class="intro">
+    เอกสารฉบับนี้กำหนดหลักเกณฑ์และเงื่อนไขการรับจำนำของโรงรับจำนำ NEXUS PAWN
+    เพื่อให้การให้บริการเป็นไปอย่างโปร่งใสและเป็นธรรมแก่ทั้งสองฝ่าย
+    ผู้นำทรัพย์มาจำนำถือว่าได้อ่านและยอมรับเงื่อนไขทั้งหมดในเอกสารฉบับนี้แล้ว
+    นับแต่วันที่ทำรายการฝากทรัพย์กับทางร้าน
+  </p>
+
+  <h2>หมวด 1 — การรับจำนำ</h2>
+  <ol class="terms">
+    <li>ร้านรับจำนำเฉพาะทรัพย์ที่แอดมินของร้านตรวจสอบและประเมินมูลค่าแล้วเท่านั้น
+        มูลค่ารับจำนำเป็นไปตามที่แอดมินกำหนด ณ วันฝาก</li>
+    <li>ทุกรายการรับจำนำจะบันทึก วันที่ / ชื่อทรัพย์ / มูลค่ารับจำนำ / แอดมินผู้รับฝาก
+        ไว้ในระบบบัญชีของร้าน และลูกค้าจะได้รับเลขไอดีประจำตัว
+        สำหรับตรวจสอบยอดด้วยตนเองได้ตลอด 24 ชั่วโมงที่เว็บไซต์ของร้าน</li>
+  </ol>
+
+  <h2>หมวด 2 — ดอกเบี้ย</h2>
+  <ol class="terms" start="3" style="counter-reset: item 2">
+    <li>อัตราดอกเบี้ยแบบทบต้นรายวัน 3% (สามเปอร์เซ็นต์) ของยอดค้างมัดจำ
+        โดยเริ่มคิดตั้งแต่วันถัดจากวันฝากเป็นต้นไป</li>
+    <li>ในวันที่มีการชำระคืน ระบบจะคิดดอกเบี้ยของวันนั้นก่อน แล้วจึงหักยอดชำระคืน</li>
+  </ol>
+
+  <h2>หมวด 3 — การชำระและการไถ่ถอน</h2>
+  <ol class="terms" style="counter-reset: item 4">
+    <li>ลูกค้าสามารถชำระบางส่วนได้ทุกวันผ่านแอดมินของร้าน
+        ทรัพย์จำนำจะคืนให้เมื่อชำระยอดค้างครบถ้วน (ยอดคงเหลือเป็น 0)</li>
+    <li>ยอดค้างทั้งหมดอ้างอิงจากระบบบัญชีของร้านเป็นหลัก
+        ลูกค้าตรวจสอบได้จากเว็บไซต์ และขอรายงานฉบับเต็ม (Full Daily NEXUS Report) ได้ทุกเมื่อ</li>
+  </ol>
+
+  <h2>หมวด 4 — การยึดทรัพย์จำนำ</h2>
+  <ol class="terms" style="counter-reset: item 6">
+    <li>
+      ร้านมีสิทธิ์ยึดทรัพย์จำนำทันทีโดยไม่ต้องแจ้งล่วงหน้า เมื่อเข้าเงื่อนไขข้อใดข้อหนึ่งดังต่อไปนี้
+      <div class="seize">
+        <b class="title">(ก) ยอดค้างเกินเพดาน</b> — ยอดค้างมัดจำรวม (เงินต้นพร้อมดอกเบี้ย)
+        มีจำนวนถึงหรือเกินกว่า <b>150% ของมูลค่ารับจำนำ</b>
+      </div>
+      <div class="seize">
+        <b class="title">(ข) ขาดการชำระตามกำหนด</b> — ไม่มีการชำระใด ๆ
+        เป็นเวลาเกิน <b>14 วันติดต่อกัน</b> นับจากวันฝากหรือวันที่มีการชำระครั้งล่าสุด
+      </div>
+    </li>
+    <li>เมื่อร้านใช้สิทธิ์ยึดทรัพย์แล้ว ทรัพย์จำนำตกเป็นกรรมสิทธิ์ของร้านโดยสมบูรณ์
+        หนี้ตามรายการนั้นถือเป็นอันสิ้นสุด ร้านมีสิทธิ์นำทรัพย์ไปจำหน่ายหรือจัดการได้ตามเห็นสมควร
+        และลูกค้าไม่มีสิทธิ์เรียกร้องใด ๆ เพิ่มเติมจากร้าน</li>
+  </ol>
+
+  <h2>หมวด 5 — ข้อกำหนดอื่น ๆ</h2>
+  <ol class="terms" style="counter-reset: item 8">
+    <li>ร้านจะเก็บรักษาทรัพย์ที่รับจำนำไว้อย่างดีตลอดระยะเวลาการฝาก</li>
+    <li>กรณีมีข้อโต้แย้งเกี่ยวกับยอดหรือรายการใด ให้ถือบันทึกในระบบบัญชีของร้านเป็นที่สุด
+        และคำวินิจฉัยของเจ้าของร้านถือเป็นข้อยุติ</li>
+    <li>ร้านสงวนสิทธิ์ในการแก้ไขข้อกำหนดและเงื่อนไขฉบับนี้
+        โดยจะประกาศให้ทราบผ่านหน้าเว็บไซต์ของร้าน</li>
+  </ol>
+
+  <div class="sign">
+    <div><div class="line"></div>ผู้รับจำนำ (ตัวแทนร้าน NEXUS PAWN)<br>วันที่ ............................</div>
+    <div><div class="line"></div>ผู้จำนำ (ลูกค้า)<br>วันที่ ............................</div>
+  </div>
+
+  <div class="foot">NEXUS PAWN — ข้อกำหนดและเงื่อนไขการรับจำนำ | NP-TERMS-2026-001 | ประกาศใช้ 08/07/2026</div>
+</div>
+
+<script src="engine.js"></script>
+<script>
+document.getElementById("logoSlot").innerHTML = logoSVG(72);
+</script>
+</body>
+</html>

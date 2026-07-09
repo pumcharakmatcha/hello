@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>โปสเตอร์โฆษณา — NEXUS PAWN</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #333; display: flex; justify-content: center; padding: 0; }
+  .poster {
+    width: 1080px; height: 1350px;
+    background:
+      radial-gradient(ellipse 700px 500px at 50% 12%, rgba(232,184,75,.16), transparent 65%),
+      radial-gradient(ellipse 900px 700px at 50% 115%, rgba(35,64,122,.55), transparent 70%),
+      linear-gradient(165deg, #0d1526 0%, #101a30 45%, #0a1120 100%);
+    color: #e9edf5;
+    font-family: "Leelawadee UI", "Segoe UI", Tahoma, "Noto Sans Thai", sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 64px 70px 46px;
+    position: relative;
+    overflow: hidden;
+  }
+  .frame {
+    position: absolute; inset: 26px;
+    border: 2px solid rgba(232,184,75,.45);
+    border-radius: 18px;
+    pointer-events: none;
+  }
+  .frame::after {
+    content: ""; position: absolute; inset: 8px;
+    border: 1px solid rgba(232,184,75,.25); border-radius: 12px;
+  }
+  .logo { margin-top: 6px; filter: drop-shadow(0 0 34px rgba(232,184,75,.45)); }
+  .brand { font-size: 48px; font-weight: 800; letter-spacing: .06em; margin-top: 12px; }
+  .brand .nx { color: #7fb2ff; }
+  .brand .pw { color: #e8b84b; }
+  .brand-sub { color: #93a1b8; font-size: 22px; margin-top: 4px; letter-spacing: .12em; }
+
+  .hero {
+    margin-top: 26px; text-align: center;
+    font-size: 118px; font-weight: 900; line-height: 1.05;
+    color: #e8b84b;
+    letter-spacing: .02em;
+    text-shadow: 0 0 46px rgba(232,184,75,.55), 0 4px 0 rgba(0,0,0,.35);
+  }
+  .hero-sub {
+    margin-top: 18px; text-align: center;
+    font-size: 42px; font-weight: 800; line-height: 1.3;
+    color: #fff;
+  }
+  .hero-sub .gold { color: #e8b84b; }
+  .hero-sub2 {
+    margin-top: 8px; text-align: center;
+    font-size: 29px; font-weight: 600; line-height: 1.4;
+    color: #b9c4d6;
+  }
+
+  .benefits { margin-top: 30px; width: 100%; display: flex; flex-direction: column; gap: 12px; }
+  .b {
+    display: flex; align-items: center; gap: 26px;
+    background: rgba(26,35,51,.82);
+    border: 1px solid rgba(232,184,75,.35);
+    border-radius: 16px;
+    padding: 14px 30px;
+  }
+  .b .ic {
+    flex: 0 0 76px; height: 76px; border-radius: 50%;
+    background: linear-gradient(150deg, #e8b84b, #b8923c);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 42px;
+  }
+  .b .t1 { font-size: 31px; font-weight: 800; color: #e8b84b; }
+  .b .t2 { font-size: 22px; color: #b9c4d6; margin-top: 2px; }
+
+  .cta {
+    margin-top: auto; width: 100%;
+    background: linear-gradient(150deg, #e8b84b, #c99a30);
+    color: #241d0a; border-radius: 16px;
+    text-align: center; padding: 20px 20px 18px;
+  }
+  .cta .big { font-size: 34px; font-weight: 800; }
+  .cta .url { font-size: 26px; font-weight: 700; margin-top: 6px; letter-spacing: .02em; }
+  .foot { color: #93a1b8; font-size: 19px; margin-top: 12px; letter-spacing: .05em; }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="frame"></div>
+  <span class="logo" id="logoSlot"></span>
+  <div class="brand"><span class="nx">NEXUS</span> <span class="pw">PAWN</span></div>
+  <div class="brand-sub">โ ร ง รั บ จำ นำ เ น็ ก ซั ส</div>
+
+  <div class="hero">💸 ตังค์ด่วน!</div>
+  <div class="hero-sub">อยากได้เงินไว แต่<span class="gold">ไม่อยากขายของรัก</span>ในราคาถูก?</div>
+  <div class="hero-sub2">เอามาจำนำกับเราสิ — รับเงินทันที ของยังเป็นของคุณ ไถ่คืนได้เสมอ</div>
+
+  <div class="benefits">
+    <div class="b">
+      <div class="ic">⚡</div>
+      <div><div class="t1">ได้เงินไว รับเงินทันที</div><div class="t2">ตกลงราคาปุ๊บ รับ XC เข้ากระเป๋าปั๊บ ไม่ต้องรอ</div></div>
+    </div>
+    <div class="b">
+      <div class="ic">💎</div>
+      <div><div class="t1">ให้ราคาสูง ประเมินยุติธรรม</div><div class="t2">ของหายาก ของเทพ เราให้ราคาที่คุณพอใจ</div></div>
+    </div>
+    <div class="b">
+      <div class="ic">🔍</div>
+      <div><div class="t1">เช็กยอดออนไลน์ 24 ชม.</div><div class="t2">กรอกไอดีดูยอดเองได้ทุกเวลา โปร่งใสทุกรายการ</div></div>
+    </div>
+    <div class="b">
+      <div class="ic">🛡️</div>
+      <div><div class="t1">ของอยู่ครบ ปลอดภัย</div><div class="t2">เก็บรักษาอย่างดี ไถ่คืนได้ทันทีเมื่อพร้อม</div></div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <div class="big">สนใจจำนำ ทักแอดมินร้านได้เลย</div>
+    <div class="url">เช็กยอด: pumcharakmatcha.github.io/hello</div>
+  </div>
+  <div class="foot">NEXUS PAWN — เพื่อนยามฉุกเฉินของคุณ</div>
+</div>
+
+<script src="engine.js"></script>
+<script>
+document.getElementById("logoSlot").innerHTML = logoSVG(128);
+</script>
+</body>
+</html>
